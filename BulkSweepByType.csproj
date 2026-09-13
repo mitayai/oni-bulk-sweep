@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>WillRowe.BulkSweepByType</RootNamespace>
+    <AssemblyName>BulkSweepByType</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <!-- Without this, a library project (as opposed to an exe) never copies its NuGet
+         package DLLs (PLib.dll) to its own output folder, so there's nothing there for
+         ILRepack to merge below - it silently merges nothing and the mod fails to load
+         at runtime with a FileNotFoundException for PLib. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- Change this if your game is installed somewhere else. -->
+    <GameFolder>C:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed</GameFolder>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp" HintPath="$(GameFolder)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="Assembly-CSharp-firstpass" HintPath="$(GameFolder)\Assembly-CSharp-firstpass.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(GameFolder)\0Harmony.dll" Private="false" />
+    <Reference Include="UnityEngine" HintPath="$(GameFolder)\UnityEngine.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(GameFolder)\UnityEngine.CoreModule.dll" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- PLib supplies PAction.MaxAction (a "no hotkey" placeholder) for the info-panel
+         button. It must be merged into this DLL with ILRepack below, since every mod that
+         uses PLib ships its own private copy to avoid version clashes with other mods. -->
+    <PackageReference Include="PLib" Version="4.25.0" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.40">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Merge PLib into our own DLL (internalized, so it can't collide with other mods'
+       copies of PLib), then copy the result up next to mod.yaml so the game can load it. -->
+  <Target Name="MergeAndDeploy" AfterTargets="Build">
+    <ItemGroup>
+      <InputAssemblies Include="$(TargetPath)" />
+      <InputAssemblies Include="$(TargetDir)PLib*.dll" />
+    </ItemGroup>
+    <ILRepack TargetKind="SameAsPrimaryAssembly" OutputFile="$(TargetPath)" InputAssemblies="@(InputAssemblies)" Internalize="true" Wildcards="true" LibraryPath="$(GameFolder)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)" />
+  </Target>
+
+</Project>
