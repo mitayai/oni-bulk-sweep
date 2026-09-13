@@ -1,0 +1,3 @@
+title: "Bulk Sweep by Type"
+description: "Select any sweepable item and use 'Sweep All: <Material>' to mark every item of that material on the map for Sweep, at that item's priority. Also adds a 'Bulk Dig' toolbar tool: click one tile to dig every tile of that material on the map."
+staticID: "WillRowe.BulkSweepByType"
