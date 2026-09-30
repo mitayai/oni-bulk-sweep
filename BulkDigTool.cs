@@ -5,6 +5,9 @@
  * marker at that priority - e.g. click one Slime tile to queue every Slime deposit on the
  * map, or one Polluted Dirt tile to queue every Polluted Dirt deposit.
  *
+ * Only tiles the player has actually revealed are touched (Grid.IsVisible) - cells still
+ * under fog of war are skipped, so this can't be used to blind-dig unexplored terrain.
+ *
  * Dig has a genuine public API for marking a tile: DigTool.PlaceDig(cell, delay) is a
  * public static method (confirmed by reflecting over the installed game assembly), so no
  * private-field reflection is needed there.
@@ -73,7 +76,7 @@ namespace WillRowe.BulkSweepByType {
 		private void DigAllMatching(SimHashes elementId, PrioritySetting priority) {
 			int cellCount = Grid.CellCount;
 			for (int cell = 0; cell < cellCount; cell++) {
-				if (!Grid.IsValidCell(cell) || !Grid.Solid[cell])
+				if (!Grid.IsValidCell(cell) || !Grid.Solid[cell] || !Grid.IsVisible(cell))
 					continue;
 				var element = Grid.Element[cell];
 				if (element == null || element.id != elementId || !Diggable.IsDiggable(cell))
