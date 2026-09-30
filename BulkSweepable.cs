@@ -4,6 +4,9 @@
  * Adds a button to the info panel of any sweepable item ("Sweep All: <Material>") that
  * marks every item of the same element anywhere on the map for Sweep, at the priority
  * currently set on the item you clicked.
+ *
+ * Only tiles the player has actually revealed are scanned (Grid.IsVisible) - debris
+ * sitting in cells still under fog of war is left alone.
  */
 
 using UnityEngine;
@@ -57,7 +60,7 @@ namespace WillRowe.BulkSweepByType {
 			PrioritySetting priority = prioritizable.GetMasterPriority();
 			int cellCount = Grid.CellCount;
 			for (int cell = 0; cell < cellCount; cell++) {
-				if (!Grid.IsValidCell(cell))
+				if (!Grid.IsValidCell(cell) || !Grid.IsVisible(cell))
 					continue;
 				var head = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 				if (head == null || !head.TryGetComponent(out Pickupable pickupable))
