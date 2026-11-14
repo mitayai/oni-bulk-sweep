@@ -5,6 +5,8 @@ A mod for [Oxygen Not Included](https://www.klei.com/games/oxygen-not-included).
 - Select any sweepable item and use the new **"Sweep All: `<Material>`"** button on its info
   panel to mark every item of that same material anywhere on the map for Sweep, at that
   item's current priority.
+- **Bulk Sweep** — a toolbar tool. Pick a priority, click one loose item, and every item of
+  that same material on the current asteroid gets marked for Sweep at that priority.
 - **Bulk Dig** — a new toolbar tool (added alongside the vanilla tools). Pick a priority,
   click one tile of solid terrain, and every tile of that same material on the map gets a
   Dig marker at that priority.

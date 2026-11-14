@@ -34,6 +34,7 @@ namespace WillRowe.BulkSweepByType {
 	public static class PlayerController_OnPrefabInit_Patch {
 		internal static void Postfix(PlayerController __instance) {
 			PToolMode.RegisterTool<BulkDigTool>(__instance);
+			PToolMode.RegisterTool<BulkSweepTool>(__instance);
 		}
 	}
 
@@ -45,17 +46,29 @@ namespace WillRowe.BulkSweepByType {
 	public static class ToolMenu_CreateBasicTools_Patch {
 		private const string TOOL_TEXT = "Bulk Dig";
 
+		private const string SWEEP_TEXT = "Bulk Sweep";
+
 		internal static void Postfix(ToolMenu __instance) {
 			var tools = __instance.basicTools;
 			// CreateBasicTools runs again every time a colony is loaded, so guard
-			// against adding a second (third, fourth...) copy of our entry.
-			for (int i = 0; i < tools.Count; i++)
+			// against adding a second (third, fourth...) copy of our entries.
+			bool hasDig = false, hasSweep = false;
+			for (int i = 0; i < tools.Count; i++) {
 				if (tools[i].text == TOOL_TEXT)
-					return;
-			tools.Add(ToolMenu.CreateToolCollection(TOOL_TEXT,
-				"icon_action_dig", BulkSweepByTypeMod.NoHotkey, nameof(BulkDigTool),
-				"Digs every tile of one material on the map, at the priority you pick.",
-				false));
+					hasDig = true;
+				else if (tools[i].text == SWEEP_TEXT)
+					hasSweep = true;
+			}
+			if (!hasDig)
+				tools.Add(ToolMenu.CreateToolCollection(TOOL_TEXT,
+					"icon_action_dig", BulkSweepByTypeMod.NoHotkey, nameof(BulkDigTool),
+					"Digs every tile of one material on the map, at the priority you pick.",
+					false));
+			if (!hasSweep)
+				tools.Add(ToolMenu.CreateToolCollection(SWEEP_TEXT,
+					"icon_action_store", BulkSweepByTypeMod.NoHotkey, nameof(BulkSweepTool),
+					"Sweeps every loose item of one material on this asteroid, at the priority you pick.",
+					false));
 		}
 	}
 

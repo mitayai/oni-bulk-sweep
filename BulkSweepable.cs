@@ -56,14 +56,18 @@ namespace WillRowe.BulkSweepByType {
 		private void SweepAllMatching() {
 			if (primaryElement == null || prioritizable == null)
 				return;
-			SimHashes elementId = primaryElement.ElementID;
-			PrioritySetting priority = prioritizable.GetMasterPriority();
-			// Spaced Out / DLC maps put every asteroid in one grid; stay on this item's world.
-			int originCell = Grid.PosToCell(gameObject);
-			if (!Grid.IsValidCell(originCell))
-				return;
-			// Only ever act on the asteroid currently on screen.
-			if (ClusterManager.Instance == null ||
+			SweepAll(Grid.PosToCell(gameObject), primaryElement.ElementID,
+				prioritizable.GetMasterPriority());
+		}
+
+		/// <summary>
+		/// Marks every revealed item of the given element on the active asteroid for
+		/// Sweep at the given priority. originCell is the cell of the item the player
+		/// picked; nothing happens unless it is on the active asteroid.
+		/// </summary>
+		internal static void SweepAll(int originCell, SimHashes elementId,
+				PrioritySetting priority) {
+			if (!Grid.IsValidCell(originCell) || ClusterManager.Instance == null ||
 					Grid.WorldIdx[originCell] != ClusterManager.Instance.activeWorldId)
 				return;
 			byte worldId = Grid.WorldIdx[originCell];
