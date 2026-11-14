@@ -62,6 +62,10 @@ namespace WillRowe.BulkSweepByType {
 			int originCell = Grid.PosToCell(gameObject);
 			if (!Grid.IsValidCell(originCell))
 				return;
+			// Only ever act on the asteroid currently on screen.
+			if (ClusterManager.Instance == null ||
+					Grid.WorldIdx[originCell] != ClusterManager.Instance.activeWorldId)
+				return;
 			byte worldId = Grid.WorldIdx[originCell];
 			int cellCount = Grid.CellCount;
 			for (int cell = 0; cell < cellCount; cell++) {

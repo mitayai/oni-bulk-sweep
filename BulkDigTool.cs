@@ -66,7 +66,11 @@ namespace WillRowe.BulkSweepByType {
 			if (handledThisClick || !Grid.IsValidCell(cell) || !Grid.Solid[cell])
 				return;
 			var element = Grid.Element[cell];
-			if (element == null)
+			// Ignore built tiles (foundation), neutronium-like unbreakable tiles and
+			// fogged cells: clicking those must not queue digs of the same material
+			// elsewhere on the map.
+			if (element == null || element.hardness == byte.MaxValue ||
+					!Grid.IsActiveWorld(cell) || !Grid.IsVisible(cell) || !Diggable.IsDiggable(cell))
 				return;
 			handledThisClick = true;
 			DigAllMatching(element.id, Grid.WorldIdx[cell], ToolMenu.Instance.PriorityScreen.
@@ -81,7 +85,8 @@ namespace WillRowe.BulkSweepByType {
 						!Grid.Solid[cell] || !Grid.IsVisible(cell))
 					continue;
 				var element = Grid.Element[cell];
-				if (element == null || element.id != elementId || !Diggable.IsDiggable(cell))
+				if (element == null || element.id != elementId ||
+						element.hardness == byte.MaxValue || !Diggable.IsDiggable(cell))
 					continue;
 				var diggable = Diggable.GetDiggable(cell);
 				var placer = diggable != null ? diggable.gameObject : DigTool.PlaceDig(cell, 0);
