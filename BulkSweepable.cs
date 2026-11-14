@@ -58,9 +58,15 @@ namespace WillRowe.BulkSweepByType {
 				return;
 			SimHashes elementId = primaryElement.ElementID;
 			PrioritySetting priority = prioritizable.GetMasterPriority();
+			// Spaced Out / DLC maps put every asteroid in one grid; stay on this item's world.
+			int originCell = Grid.PosToCell(gameObject);
+			if (!Grid.IsValidCell(originCell))
+				return;
+			byte worldId = Grid.WorldIdx[originCell];
 			int cellCount = Grid.CellCount;
 			for (int cell = 0; cell < cellCount; cell++) {
-				if (!Grid.IsValidCell(cell) || !Grid.IsVisible(cell))
+				if (!Grid.IsValidCell(cell) || Grid.WorldIdx[cell] != worldId ||
+						!Grid.IsVisible(cell))
 					continue;
 				var head = Grid.Objects[cell, (int)ObjectLayer.Pickupables];
 				if (head == null || !head.TryGetComponent(out Pickupable pickupable))

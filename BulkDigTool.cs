@@ -69,14 +69,16 @@ namespace WillRowe.BulkSweepByType {
 			if (element == null)
 				return;
 			handledThisClick = true;
-			DigAllMatching(element.id, ToolMenu.Instance.PriorityScreen.
+			DigAllMatching(element.id, Grid.WorldIdx[cell], ToolMenu.Instance.PriorityScreen.
 				GetLastSelectedPriority());
 		}
 
-		private void DigAllMatching(SimHashes elementId, PrioritySetting priority) {
+		private void DigAllMatching(SimHashes elementId, byte worldId,
+				PrioritySetting priority) {
 			int cellCount = Grid.CellCount;
 			for (int cell = 0; cell < cellCount; cell++) {
-				if (!Grid.IsValidCell(cell) || !Grid.Solid[cell] || !Grid.IsVisible(cell))
+				if (!Grid.IsValidCell(cell) || Grid.WorldIdx[cell] != worldId ||
+						!Grid.Solid[cell] || !Grid.IsVisible(cell))
 					continue;
 				var element = Grid.Element[cell];
 				if (element == null || element.id != elementId || !Diggable.IsDiggable(cell))
